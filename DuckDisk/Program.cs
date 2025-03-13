@@ -5,9 +5,9 @@ namespace DuckDisk;
 
 class Program
 {
-    static async Task Main()
+    static void Main()
     {
-        DriveService pendriveService = new DriveService();
-        List<Drive> drives = await pendriveService.GetAllDriveAsync();
+        DriveService driveService = new DriveService();
+        driveService.MenuDrives();
     }
 }

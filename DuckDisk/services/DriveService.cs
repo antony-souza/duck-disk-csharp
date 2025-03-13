@@ -1,6 +1,5 @@
 ﻿using DuckDisk.interfaces;
 using DuckDisk.models;
-using DuckDisk.Models;
 
 namespace DuckDisk.services;
 
@@ -28,7 +27,7 @@ public class DriveService : IDrive
                     Format = drive.DriveFormat.ToString(),
                 });
             }
-            
+
             Console.Clear();
             Console.WriteLine("Drives Encontrados:");
 
@@ -46,13 +45,92 @@ public class DriveService : IDrive
         });
     }
 
-    public Task<Drive> GetDriveDetailsAsync(string path)
+    public async Task<Drive> GetDriveDetailsAsync(string path)
+    {
+        if (string.IsNullOrEmpty(path) || !Path.IsPathRooted(path) || path.Length < 2 || path[1] != ':')
+        {
+            Console.WriteLine("Caminho inválido! O path deve ser no formato de uma letra de unidade (ex: C:).");
+            return new Drive();
+        }
+
+        var drive = new DriveInfo(path);
+
+        if (!drive.IsReady)
+        {
+            Console.WriteLine("Drive não encontrado ou não está pronto!");
+            return new Drive();
+        }
+
+        return await Task.Run(() =>
+        {
+            var driveDetails = new Drive
+            {
+                Path = drive.Name,
+                Name = drive.VolumeLabel,
+                Size = drive.TotalSize,
+                Type = drive.DriveType.ToString(),
+                Format = drive.DriveFormat.ToString(),
+            };
+
+            Console.Clear();
+            Console.WriteLine("Drive Encontrado:");
+
+            Console.WriteLine(
+                $"Path: {driveDetails.Path}, " +
+                $"Name: {driveDetails.Name}, " +
+                $"Size: {driveDetails.Size}, " +
+                $"Type: {driveDetails.Type}, " +
+                $"Format: {driveDetails.Format}");
+
+            return driveDetails;
+        });
+    }
+    
+    public Task<bool> FormatDriveAsync(Drive drive)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> FormatDriveAsync(Drive drive, FileSystemType fileSystem)
+    public void MenuDrives()
     {
-        throw new NotImplementedException();
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("----- Menu de Drives -----");
+            Console.WriteLine("1. Listar todos os drives");
+            Console.WriteLine("2. Exibir detalhes de um drive");
+            Console.WriteLine("3. Formatar um drive (não implementado)");
+            Console.WriteLine("4. Sair");
+            Console.Write("Escolha uma opção: ");
+            var opcao = Console.ReadLine();
+
+            switch (opcao)
+            {
+                case "1":
+                    GetAllDriveAsync().Wait();
+                    break;
+
+                case "2":
+                    Console.Write("Digite o path(ex: F:) do drive: ");
+                    var pathLine = Console.ReadLine();
+                    GetDriveDetailsAsync(pathLine).Wait();
+                    break;
+                
+                case "3":
+                    Console.WriteLine("Formato de drive ainda não implementado.");
+                    break;
+
+                case "4":
+                    Console.WriteLine("Saindo...");
+                    return;
+
+                default:
+                    Console.WriteLine("Opção inválida! Tente novamente.");
+                    break;
+            }
+
+            Console.WriteLine("Pressione qualquer tecla para voltar ao Menu de Drives...");
+            Console.ReadKey();
+        }
     }
 }
