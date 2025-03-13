@@ -4,8 +4,8 @@ namespace DuckDisk.interfaces;
 
 public interface IDrive
 {
-    Task<List<Drive>> GetAllDriveAsync();
-    Task<Drive> GetDriveDetailsAsync(string path);
-    Task<bool> FormatDriveAsync(Drive drive);
+    Task<List<DriveModel>> GetAllDriveAsync();
+    Task<DriveModel> GetDriveDetailsAsync(string path);
+    Task<bool> FormatDriveAsync(DriveModel driveModel);
     void MenuDrives();
 }

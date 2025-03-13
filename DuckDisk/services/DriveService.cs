@@ -5,11 +5,11 @@ namespace DuckDisk.services;
 
 public class DriveService : IDrive
 {
-    public async Task<List<Drive>> GetAllDriveAsync()
+    public async Task<List<DriveModel>> GetAllDriveAsync()
     {
         return await Task.Run(() =>
         {
-            List<Drive> drives = new List<Drive>();
+            List<DriveModel> drives = new List<DriveModel>();
 
             DriveInfo[] allDrivesArray = DriveInfo.GetDrives();
 
@@ -18,7 +18,7 @@ public class DriveService : IDrive
                 //Filtro por pendrive(Removable)
                 /*if (pendrive.DriveType == DriveType.Removable){}*/
 
-                drives.Add(new Drive
+                drives.Add(new DriveModel
                 {
                     Path = drive.Name,
                     Name = drive.VolumeLabel,
@@ -45,12 +45,12 @@ public class DriveService : IDrive
         });
     }
 
-    public async Task<Drive> GetDriveDetailsAsync(string path)
+    public async Task<DriveModel> GetDriveDetailsAsync(string path)
     {
         if (string.IsNullOrEmpty(path) || !Path.IsPathRooted(path) || path.Length < 2 || path[1] != ':')
         {
             Console.WriteLine("Caminho inválido! O path deve ser no formato de uma letra de unidade (ex: C:).");
-            return new Drive();
+            return new DriveModel();
         }
 
         var drive = new DriveInfo(path);
@@ -58,12 +58,12 @@ public class DriveService : IDrive
         if (!drive.IsReady)
         {
             Console.WriteLine("Drive não encontrado ou não está pronto!");
-            return new Drive();
+            return new DriveModel();
         }
 
         return await Task.Run(() =>
         {
-            var driveDetails = new Drive
+            var driveDetails = new DriveModel
             {
                 Path = drive.Name,
                 Name = drive.VolumeLabel,
@@ -86,7 +86,7 @@ public class DriveService : IDrive
         });
     }
     
-    public Task<bool> FormatDriveAsync(Drive drive)
+    public Task<bool> FormatDriveAsync(DriveModel driveModel)
     {
         throw new NotImplementedException();
     }

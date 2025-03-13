@@ -1,6 +1,6 @@
 ﻿namespace DuckDisk.models;
 
-public class Drive
+public class DriveModel
 {
     public string Name { get; init; } = String.Empty;
     public long Size { get; init; }
