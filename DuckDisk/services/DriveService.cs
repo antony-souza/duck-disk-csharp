@@ -4,7 +4,7 @@ using DuckDisk.Models;
 
 namespace DuckDisk.services;
 
-public class DriveService : IDriveService
+public class DriveService : IDrive
 {
     public async Task<List<Drive>> GetAllDriveAsync()
     {

@@ -3,7 +3,7 @@ using DuckDisk.Models;
 
 namespace DuckDisk.interfaces;
 
-public interface IDriveService
+public interface IDrive
 {
     Task<List<Drive>> GetAllDriveAsync();
     Task<Drive> GetDriveDetailsAsync(string path);
