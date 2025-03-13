@@ -1,9 +1,13 @@
-﻿namespace DuckDisk;
+﻿using DuckDisk.models;
+using DuckDisk.services;
+
+namespace DuckDisk;
 
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
-        Console.WriteLine("Hello World!");
+        DriveService pendriveService = new DriveService();
+        List<Drive> drives = await pendriveService.GetAllDriveAsync();
     }
 }
