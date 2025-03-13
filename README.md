@@ -1,5 +1,7 @@
 # Duck Disk
 
+`status: desenvolvimento`
+
 Duck Disk é uma ferramenta de código aberto para gravação de imagens ISO,
 desenvolvida em C#. Projetada para ser leve e eficiente, 
 a aplicação roda diretamente no terminal, 
