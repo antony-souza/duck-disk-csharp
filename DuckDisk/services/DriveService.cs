@@ -28,7 +28,8 @@ public class DriveService : IDriveService
                     Format = drive.DriveFormat.ToString(),
                 });
             }
-
+            
+            Console.Clear();
             Console.WriteLine("Drives Encontrados:");
 
             foreach (var drive in drives)
