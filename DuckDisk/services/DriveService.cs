@@ -92,11 +92,6 @@ public class DriveService : IDrive
             return driveDetails;
         });
     }
-    
-    public Task<bool> FormatDriveAsync(DriveModel driveModel)
-    {
-        throw new NotImplementedException();
-    }
 
     public void MenuDrives()
     {
@@ -108,8 +103,7 @@ public class DriveService : IDrive
             Console.WriteLine();
             Console.WriteLine("1. Listar todos os drives");
             Console.WriteLine("2. Exibir detalhes de um drive");
-            Console.WriteLine("3. Formatar um drive (não implementado)");
-            Console.WriteLine("4. Sair");
+            Console.WriteLine("3. Sair");
             Console.WriteLine();
             Console.Write("Escolha uma opção: ");
             var opcao = Console.ReadLine();
@@ -127,10 +121,6 @@ public class DriveService : IDrive
                     break;
                 
                 case "3":
-                    Console.WriteLine("Formato de drive ainda não implementado.");
-                    break;
-
-                case "4":
                     Console.WriteLine("Saindo...");
                     return;
 

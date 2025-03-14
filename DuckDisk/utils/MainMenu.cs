@@ -10,14 +10,16 @@ public class MainMenu
     {
         DriveService driveService = new DriveService();
         IsoService isoService = new IsoService();
+        BootableDriveService bootableDriveService = new BootableDriveService();
         while (true)
         {
             Console.Clear();
             DuckDriveTitle.DisplayTitle();
-            Console.ResetColor();
+            Console.WriteLine("----- Menu do Duck Drive -----");
+            Console.WriteLine();
             Console.WriteLine("1. Menu de Drives");
             Console.WriteLine("2. Menu de ISO's");
-            Console.WriteLine("3. Criar Disk Bootavel(Não implementado)");
+            Console.WriteLine("3. Menu de Criação do Drive Bootável");
             Console.WriteLine("4. Sair");
             Console.WriteLine();
             Console.Write("Escolha uma opção: ");
@@ -35,7 +37,7 @@ public class MainMenu
                     break;
 
                 case "3":
-                    Console.WriteLine("Criar Disk Bootavel - Não implementado");
+                    bootableDriveService.MenuBootableDrive();
                     break;
                 case "4":
                     Console.WriteLine("Saindo...");
