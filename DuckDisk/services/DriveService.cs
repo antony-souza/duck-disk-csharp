@@ -9,32 +9,36 @@ public class DriveService : IDrive
     
     public async Task<List<DriveModel>> GetAllDriveAsync()
     {
-        
         return await Task.Run(() =>
         {
             List<DriveModel> drives = new List<DriveModel>();
 
             DriveInfo[] allDrivesArray = DriveInfo.GetDrives();
-
+            
             foreach (DriveInfo drive in allDrivesArray)
             {
                 //Filtro por pendrive(Removable)
-                /*if (pendrive.DriveType == DriveType.Removable){}*/
-
-                drives.Add(new DriveModel
+                if (drive.DriveType == DriveType.Removable)
                 {
-                    Path = drive.Name,
-                    Name = drive.VolumeLabel,
-                    Size = drive.TotalSize,
-                    Type = drive.DriveType.ToString(),
-                    Format = drive.DriveFormat.ToString(),
-                });
+                    if (!drive.IsReady)
+                    {
+                        Console.WriteLine("Drives removíveis com problema!");
+                    }
+                    drives.Add(new DriveModel
+                    {
+                        Path = drive.Name,
+                        Name = drive.VolumeLabel,
+                        Size = drive.TotalSize,
+                        Type = drive.DriveType.ToString(),
+                        Format = drive.DriveFormat.ToString(),
+                    });
+                }
             }
 
             Console.Clear();
             DuckDriveTitle.DisplayTitle();
-            Console.WriteLine("Drives Encontrados:");
-
+            Console.WriteLine("Drives Removíveis Disponíveis:");
+            Console.WriteLine();
             foreach (var drive in drives)
             {
                 var formatSize = FormatBytes.Format(drive.Size);
