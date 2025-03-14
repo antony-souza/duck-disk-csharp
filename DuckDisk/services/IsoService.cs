@@ -1,6 +1,7 @@
 ﻿using DuckDisk.interfaces;
 using DuckDisk.models;
 using DuckDisk.utils;
+using Figgle;
 
 namespace DuckDisk.services
 {
@@ -18,7 +19,8 @@ namespace DuckDisk.services
             };
 
             var formatSize = FormatBytes.Format(isoInfo.Length);
-
+            Console.WriteLine("\nDetalhes da ISO:");
+            Console.WriteLine();
             Console.WriteLine($"Nome: {isoModel.Name}");
             Console.WriteLine($"Tamanho: {formatSize}");
             Console.WriteLine($"Data de Criação: {isoInfo.CreationTime}");
@@ -49,6 +51,7 @@ namespace DuckDisk.services
             while (true)
             {
                 Console.Clear();
+                DuckDiskTitle.DisplayTitle();
                 Console.WriteLine("----- Menu de Arquivos ISO -----");
                 Console.WriteLine();
                 Console.WriteLine("1. Exibir detalhes da ISO");
@@ -61,7 +64,6 @@ namespace DuckDisk.services
                 switch (opcao)
                 {
                     case "1":
-                        Console.WriteLine("\nDetalhes da ISO:");
                         isoService.GetIsoDetails(isoPath).Wait();
                         break;
 

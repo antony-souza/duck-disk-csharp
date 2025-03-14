@@ -6,6 +6,7 @@ namespace DuckDisk;
 
 class Program
 {
+
     static void Main()
     {
         MainMenu.ShowMainMenu();

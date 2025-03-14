@@ -6,8 +6,10 @@ namespace DuckDisk.services;
 
 public class DriveService : IDrive
 {
+    
     public async Task<List<DriveModel>> GetAllDriveAsync()
     {
+        
         return await Task.Run(() =>
         {
             List<DriveModel> drives = new List<DriveModel>();
@@ -30,11 +32,13 @@ public class DriveService : IDrive
             }
 
             Console.Clear();
+            DuckDiskTitle.DisplayTitle();
             Console.WriteLine("Drives Encontrados:");
 
             foreach (var drive in drives)
             {
                 var formatSize = FormatBytes.Format(drive.Size);
+                
                 Console.WriteLine(
                     $"Path: {drive.Path}, " +
                     $"Name: {drive.Name}, " +
@@ -75,8 +79,9 @@ public class DriveService : IDrive
             };
             var formatSize = FormatBytes.Format(driveDetails.Size);
             Console.Clear();
-            Console.WriteLine("Drive Encontrado:");
-            
+            DuckDiskTitle.DisplayTitle();
+            Console.WriteLine("Detalhes do Drive:");
+            Console.WriteLine();
             Console.WriteLine(
                 $"Path: {driveDetails.Path}, " +
                 $"Name: {driveDetails.Name}, " +
@@ -98,6 +103,7 @@ public class DriveService : IDrive
         while (true)
         {
             Console.Clear();
+            DuckDiskTitle.DisplayTitle();
             Console.WriteLine("----- Menu de Drives -----");
             Console.WriteLine();
             Console.WriteLine("1. Listar todos os drives");
