@@ -2,8 +2,8 @@
 
 namespace DuckDisk.interfaces;
 
-public interface IIsoService
+public interface IIso
 {
-    Task<IsoModel> LoadIsoAsync(string isoPath);
+    Task<IsoModel> GetIsoDetails(string isoPath);
     Task<bool> ValidateIsoAsync(string isoPath);
 }

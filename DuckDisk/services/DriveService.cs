@@ -1,5 +1,6 @@
 ﻿using DuckDisk.interfaces;
 using DuckDisk.models;
+using DuckDisk.utils;
 
 namespace DuckDisk.services;
 
@@ -33,10 +34,11 @@ public class DriveService : IDrive
 
             foreach (var drive in drives)
             {
+                var formatSize = FormatBytes.Format(drive.Size);
                 Console.WriteLine(
                     $"Path: {drive.Path}, " +
                     $"Name: {drive.Name}, " +
-                    $"Size: {drive.Size}, " +
+                    $"Size: {formatSize}, " +
                     $"Type: {drive.Type}, " +
                     $"Format: {drive.Format}");
             }
@@ -71,14 +73,14 @@ public class DriveService : IDrive
                 Type = drive.DriveType.ToString(),
                 Format = drive.DriveFormat.ToString(),
             };
-
+            var formatSize = FormatBytes.Format(driveDetails.Size);
             Console.Clear();
             Console.WriteLine("Drive Encontrado:");
-
+            
             Console.WriteLine(
                 $"Path: {driveDetails.Path}, " +
                 $"Name: {driveDetails.Name}, " +
-                $"Size: {driveDetails.Size}, " +
+                $"Size: {formatSize}, " +
                 $"Type: {driveDetails.Type}, " +
                 $"Format: {driveDetails.Format}");
 
@@ -97,10 +99,12 @@ public class DriveService : IDrive
         {
             Console.Clear();
             Console.WriteLine("----- Menu de Drives -----");
+            Console.WriteLine();
             Console.WriteLine("1. Listar todos os drives");
             Console.WriteLine("2. Exibir detalhes de um drive");
             Console.WriteLine("3. Formatar um drive (não implementado)");
             Console.WriteLine("4. Sair");
+            Console.WriteLine();
             Console.Write("Escolha uma opção: ");
             var opcao = Console.ReadLine();
 

@@ -4,5 +4,5 @@ public class IsoModel
 {
     public string Path { get; set; } = String.Empty;
     public long Size { get; set; }
-    public string VolumeLabel { get; set; } = String.Empty;
+    public string Name { get; set; } = String.Empty;
 }
