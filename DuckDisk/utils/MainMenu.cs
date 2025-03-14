@@ -5,7 +5,6 @@ namespace DuckDisk.utils;
 
 public class MainMenu
 {
-    DuckDiskTitle _duckDiskTitle = new DuckDiskTitle();
 
     public static void ShowMainMenu()
     {
@@ -14,7 +13,7 @@ public class MainMenu
         while (true)
         {
             Console.Clear();
-            DuckDiskTitle.DisplayTitle();
+            DuckDriveTitle.DisplayTitle();
             Console.ResetColor();
             Console.WriteLine("1. Menu de Drives");
             Console.WriteLine("2. Menu de ISO's");

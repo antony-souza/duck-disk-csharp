@@ -32,7 +32,7 @@ public class DriveService : IDrive
             }
 
             Console.Clear();
-            DuckDiskTitle.DisplayTitle();
+            DuckDriveTitle.DisplayTitle();
             Console.WriteLine("Drives Encontrados:");
 
             foreach (var drive in drives)
@@ -79,7 +79,7 @@ public class DriveService : IDrive
             };
             var formatSize = FormatBytes.Format(driveDetails.Size);
             Console.Clear();
-            DuckDiskTitle.DisplayTitle();
+            DuckDriveTitle.DisplayTitle();
             Console.WriteLine("Detalhes do Drive:");
             Console.WriteLine();
             Console.WriteLine(
@@ -103,7 +103,7 @@ public class DriveService : IDrive
         while (true)
         {
             Console.Clear();
-            DuckDiskTitle.DisplayTitle();
+            DuckDriveTitle.DisplayTitle();
             Console.WriteLine("----- Menu de Drives -----");
             Console.WriteLine();
             Console.WriteLine("1. Listar todos os drives");

@@ -2,12 +2,12 @@
 
 namespace DuckDisk.utils;
 
-    class DuckDiskTitle
+    class DuckDriveTitle
     {
         
         public static void DisplayTitle()
         {
-            string menuTitle = FiggleFonts.Doom.Render("Duck Disk");
+            string menuTitle = FiggleFonts.Doom.Render("Duck Drive");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine(menuTitle);
             Console.ResetColor();

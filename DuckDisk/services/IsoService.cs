@@ -51,7 +51,7 @@ namespace DuckDisk.services
             while (true)
             {
                 Console.Clear();
-                DuckDiskTitle.DisplayTitle();
+                DuckDriveTitle.DisplayTitle();
                 Console.WriteLine("----- Menu de Arquivos ISO -----");
                 Console.WriteLine();
                 Console.WriteLine("1. Exibir detalhes da ISO");
