@@ -1,5 +1,10 @@
 # Duck Drive
 
+![image](https://github.com/user-attachments/assets/a1518233-915a-4f6f-97dc-dcee31634a23)
+
+
+
+
 `status: desenvolvimento`
 
 Duck Drive é uma ferramenta de código aberto para gravação de imagens ISO,
