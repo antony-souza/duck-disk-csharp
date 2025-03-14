@@ -134,7 +134,7 @@ public class BootableDriveService : IBootableDrive
                     drivePath = Console.ReadLine();
 
                     Console.Write(
-                        "Digite o caminho completo do arquivo ISO(ex: C:\\Users\\anton\\Downloads\\windows.iso): ");
+                        "Digite o caminho completo do arquivo ISO(ex: C:\\Users\\user\\Downloads\\windows.iso): ");
                     string isoPath = Console.ReadLine();
 
                     BootableDriveModel bootableDrive = new BootableDriveModel
