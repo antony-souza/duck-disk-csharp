@@ -29,11 +29,6 @@ namespace DuckDisk.services
 
             return Task.FromResult(isoModel);
         }
-
-        public Task<bool> ValidateIsoAsync(string isoPath)
-        {
-            throw new NotImplementedException();
-        }
         
         public void IsoMenu()
         {

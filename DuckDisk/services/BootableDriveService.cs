@@ -1,41 +1,43 @@
 ﻿using System.Diagnostics;
-using System.Security.Principal;
 using DuckDisk.interfaces;
 using DuckDisk.models;
 using DuckDisk.utils;
+using DuckDisk.utils.BootableDriveUtilClass;
 
 namespace DuckDisk.services;
 
 public class BootableDriveService : IBootableDrive
 {
+    private readonly ExecuteCommandGeneric _executeCommandGeneric;
+    private readonly DriveService _driveService;
+    private readonly CreateTempPathScriptGeneric _createTempPathScriptGeneric;
+    private readonly CompyFilesFromIsoForDriveGeneric _copyFilesFromIsoForDriveGeneric;
+
+    public BootableDriveService()
+    {
+        _driveService = new DriveService();
+        _executeCommandGeneric = new ExecuteCommandGeneric();
+        _createTempPathScriptGeneric = new CreateTempPathScriptGeneric();
+        _copyFilesFromIsoForDriveGeneric = new CompyFilesFromIsoForDriveGeneric();
+    }
 
     public async Task<bool> FormatDriveAsync(string drivePath)
     {
-        if (string.IsNullOrEmpty(drivePath) || !Path.IsPathRooted(drivePath) || drivePath.Length < 2 ||
-            drivePath[1] != ':')
-        {
-            Console.WriteLine("Caminho inválido! O path deve ser no formato de uma letra de unidade (ex: C:).");
-            return false;
-        }
-        
-        var drive = new DriveInfo(drivePath);
-
-        if (!drive.IsReady || !Directory.Exists(drivePath))
-        {
-            Console.WriteLine("Erro: O drive não foi encontrado ou não está acessível!");
-            return false;
-        }
+        var drive  = await _driveService.GetDriveDetailsAsync(drivePath);
 
         Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Você está prestes a formatar o drive: ");
         Console.WriteLine();
-        Console.WriteLine($"Caminho: {drive.Name}");
-        Console.WriteLine($"Nome: {drive.VolumeLabel}");
-        Console.WriteLine($"Tamanho: {FormatBytes.Format(drive.TotalSize)}");
-        Console.WriteLine($"Tipo: {drive.DriveType}");
-        Console.WriteLine($"Formato: {drive.DriveFormat}");
+        Console.WriteLine($"Path: {drive.Path}");
+        Console.WriteLine($"Name: {drive.Name}");
+        Console.WriteLine($"Size: {FormatBytes.Format(drive.Size)}");
+        Console.WriteLine($"Free: {FormatBytes.Format(drive.FreeSpace)}");
+        Console.WriteLine($"Type: {drive.Type}");
+        Console.WriteLine($"Format: {drive.Format}");
         Console.WriteLine();
-        Console.Write("Deseja realmente formatar? (sim(s)/não(n): ");
+        Console.Write("Deseja realmente formatar? sim(s)/não(n): ");
+        Console.ResetColor();
         string resposta = Console.ReadLine()?.ToLower();
 
         if (resposta != "sim" && resposta != "s")
@@ -44,66 +46,25 @@ public class BootableDriveService : IBootableDrive
             return false;
         }
 
-        Console.WriteLine($"Formatando o drive {drive.Name} - ({drive.VolumeLabel})...");
-
-        string scriptFormatPath = Path.Combine(Path.GetTempPath(), "format_script.txt");
+        Console.WriteLine($"Formatando o drive {drive.Name} - {drive.Name}... :)");
+  
+        string scriptFormatPath =  "format_script.txt";
 
         string[] commandsScriptFormatPath =
-        {
+        [
             $"select volume {drivePath.Replace("\\", "")}",
             "clean",
             "create partition primary",
-            "format fs=ntfs quick",
+            "format fs=ntfs quick label=DuckDrive",
             "assign",
             "exit"
-        };
-
-        await File.WriteAllLinesAsync(scriptFormatPath, commandsScriptFormatPath);
-
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = "diskpart",
-            Verb = "runas",
-            Arguments = $"/s {scriptFormatPath}",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
-
-        try
-        {
-            using (var process = new Process { StartInfo = psi })
-            {
-                process.Start();
-
-                string output = await process.StandardOutput.ReadToEndAsync();
-                string error = await process.StandardError.ReadToEndAsync();
-
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    Console.WriteLine($"Erro ao formatar o drive. Erro: {error}");
-                    return false;
-                }
-
-                Console.WriteLine("Formatação concluída com sucesso!");
-                Console.WriteLine($"Saída: {output}");
-
-                if (process.ExitCode == 0)
-                {
-                    File.Delete(scriptFormatPath);
-                }
-
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro ao iniciar o processo: {ex.Message}");
-            return false;
-        }
+        ];
+        
+        await _createTempPathScriptGeneric.CreateTempPathScript(scriptFormatPath, commandsScriptFormatPath);
+        
+        await _executeCommandGeneric.ExecuteCommand("diskpart", $"/s {scriptFormatPath}");
+        
+        return true;
     }
 
     public async Task<bool> CreateBootableDriveAsync(BootableDriveModel driveModel)
@@ -115,7 +76,6 @@ public class BootableDriveService : IBootableDrive
         }
 
         var drive = new DriveInfo(driveModel.DrivePath);
-
         if (!drive.IsReady)
         {
             Console.WriteLine("Erro: O drive não foi encontrado ou não está acessível.");
@@ -127,103 +87,37 @@ public class BootableDriveService : IBootableDrive
         string createPathScriptPartitionActiveBoot = "format_script.txt";
 
         string[] commandsCreatePartitionActiveBoot =
-        {
+        [
             $"select volume {driveModel.DrivePath.Replace("\\", "")}",
             "active",
             "exit"
-        };
-        await CreateTempPathScript(createPathScriptPartitionActiveBoot, commandsCreatePartitionActiveBoot);
+        ];
+
+        await _createTempPathScriptGeneric.CreateTempPathScript(createPathScriptPartitionActiveBoot, commandsCreatePartitionActiveBoot);
 
         Console.WriteLine("Montando a ISO e copiando arquivos...");
-        if (!await CopyFilesFromIsoForDrive(driveModel.IsoPath, driveModel.DrivePath))
+        if (!await _copyFilesFromIsoForDriveGeneric.CopyFiles(driveModel.IsoPath, driveModel.DrivePath))
         {
             Console.WriteLine("Erro ao copiar arquivos da ISO.");
             return false;
         }
 
         Console.WriteLine("Configurando boot...");
+
         string bootCommand = $"bcdboot {driveModel.DrivePath}\\Windows /s {driveModel.DrivePath} /f ALL";
-        if (!await ExecuteCommand("cmd.exe", $"/c {bootCommand}"))
+        if (!await _executeCommandGeneric.ExecuteCommand("cmd.exe", $"/c {bootCommand}"))
         {
             Console.WriteLine("Erro ao configurar boot.");
             return false;
         }
 
         Console.WriteLine("Drive bootável criado com sucesso!");
+        
         return true;
     }
-
-    private async Task<bool> CopyFilesFromIsoForDrive(string isoPath, string drivePath)
-    {
-        string mountCommand = $"powershell Mount-DiskImage -ImagePath \"{isoPath}\"";
-        if (!await ExecuteCommand("powershell", $"-Command \"{mountCommand}\""))
-            return false;
-
-        DriveInfo mountedDrive = DriveInfo.GetDrives().FirstOrDefault(d => d.DriveFormat == "UDF");
-        if (mountedDrive == null)
-        {
-            Console.WriteLine("Erro: Não foi possível montar a ISO.");
-            return false;
-        }
-
-        string sourcePath = mountedDrive.RootDirectory.FullName;
-        string destinationPath = drivePath;
-
-        Console.WriteLine($"Copiando arquivos de {sourcePath} para {destinationPath}...");
-        return await ExecuteCommand("xcopy", $"\"{sourcePath}\" \"{destinationPath}\" /E /H /C /Y");
-    }
-
-    private async Task<bool> CreateTempPathScript(string scriptPath, string[] commands)
-    {
-        string createPathCommand = Path.Combine(Path.GetTempPath(), scriptPath);
-        //Aqui é o runCreateScriptPath
-        await File.WriteAllLinesAsync(createPathCommand, commands);
-
-        return await ExecuteCommand("diskpart", $"/s {createPathCommand}");
-    }
-
-    private async Task<bool> ExecuteCommand(string executableProcess, string commands)
-    {
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = executableProcess,
-            Arguments = commands,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        try
-        {
-            using (var process = new Process { StartInfo = psi })
-            {
-                process.Start();
-                string output = await process.StandardOutput.ReadToEndAsync();
-                string error = await process.StandardError.ReadToEndAsync();
-
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    Console.WriteLine($"Erro ao executar comando: {error}");
-                    return false;
-                }
-
-                Console.WriteLine(output);
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro ao executar processo: {ex.Message}");
-            return false;
-        }
-    }
-
+    
     public void MenuBootableDrive()
     {
-        DriveService driveService = new DriveService();
         while (true)
         {
             Console.Clear();
@@ -238,7 +132,7 @@ public class BootableDriveService : IBootableDrive
             switch (option)
             {
                 case "1":
-                    driveService.GetAllDriveAsync().Wait();
+                    _driveService.GetAllDriveAsync().Wait();
                     Console.WriteLine();
                     Console.Write("Digite o caminho do drive a ser formatado (ex: G:): ");
                     string pathDriveFormated = Console.ReadLine();
@@ -247,9 +141,10 @@ public class BootableDriveService : IBootableDrive
                         Console.WriteLine("Caminho do drive não encontrado!");
                         break;
                     }
+
                     FormatDriveAsync(pathDriveFormated).Wait();
-                    driveService.GetAllDriveAsync().Wait();
-                    
+                    _driveService.GetAllDriveAsync().Wait();
+
                     Console.WriteLine();
                     Console.Write("Digite o caminho completo do drive de criação bootável(ex: F:): ");
                     string drivePath = Console.ReadLine();
@@ -258,6 +153,7 @@ public class BootableDriveService : IBootableDrive
                         Console.WriteLine("Caminho do drive não encontrado!");
                         break;
                     }
+
                     Console.Write(
                         "Digite o caminho completo do arquivo ISO(ex: C:\\Users\\user\\Downloads\\windows.iso): ");
                     string isoPath = Console.ReadLine();

@@ -17,7 +17,7 @@ public class DriveService : IDrive
             
             foreach (DriveInfo drive in allDrivesArray)
             {
-                //Filtro por pendrive(Removable)
+                
                 if (drive.DriveType == DriveType.Removable)
                 {
                     if (!drive.IsReady)
@@ -29,6 +29,7 @@ public class DriveService : IDrive
                         Path = drive.Name,
                         Name = drive.VolumeLabel,
                         Size = drive.TotalSize,
+                        FreeSpace = drive.TotalFreeSpace,
                         Type = drive.DriveType.ToString(),
                         Format = drive.DriveFormat.ToString(),
                     });
@@ -40,13 +41,14 @@ public class DriveService : IDrive
             Console.WriteLine("Drives Removíveis Disponíveis:");
             Console.WriteLine();
             foreach (var drive in drives)
-            {
-                var formatSize = FormatBytes.Format(drive.Size);
+            { 
+                FormatBytes.Format(drive.Size);
                 
                 Console.WriteLine(
                     $"Path: {drive.Path}, " +
                     $"Name: {drive.Name}, " +
-                    $"Size: {formatSize}, " +
+                    $"Size: {FormatBytes.Format(drive.Size)}, " +
+                    $"Free: {FormatBytes.Format(drive.FreeSpace)}, " +
                     $"Type: {drive.Type}, " +
                     $"Format: {drive.Format}");
             }
@@ -78,6 +80,7 @@ public class DriveService : IDrive
                 Path = drive.Name,
                 Name = drive.VolumeLabel,
                 Size = drive.TotalSize,
+                FreeSpace = drive.TotalFreeSpace,
                 Type = drive.DriveType.ToString(),
                 Format = drive.DriveFormat.ToString(),
             };
