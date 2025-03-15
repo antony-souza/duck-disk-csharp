@@ -93,6 +93,7 @@ public class DriveService : IDrive
                 $"Path: {driveDetails.Path}, " +
                 $"Name: {driveDetails.Name}, " +
                 $"Size: {formatSize}, " +
+                $"Free: {formatSize}, " +
                 $"Type: {driveDetails.Type}, " +
                 $"Format: {driveDetails.Format}");
 

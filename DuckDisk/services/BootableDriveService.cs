@@ -23,18 +23,19 @@ public class BootableDriveService : IBootableDrive
 
     public async Task<bool> FormatDriveAsync(string drivePath)
     {
-        var drive  = await _driveService.GetDriveDetailsAsync(drivePath);
+        var drive = await _driveService.GetDriveDetailsAsync(drivePath);
 
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Você está prestes a formatar o drive: ");
         Console.WriteLine();
-        Console.WriteLine($"Path: {drive.Path}");
-        Console.WriteLine($"Name: {drive.Name}");
-        Console.WriteLine($"Size: {FormatBytes.Format(drive.Size)}");
-        Console.WriteLine($"Free: {FormatBytes.Format(drive.FreeSpace)}");
-        Console.WriteLine($"Type: {drive.Type}");
-        Console.WriteLine($"Format: {drive.Format}");
+        Console.WriteLine(
+            $"Path: {drive.Path}, " +
+            $"Name: {drive.Name}, " +
+            $"Size: {FormatBytes.Format(drive.Size)}, " +
+            $"Free: {FormatBytes.Format(drive.FreeSpace)}, " +
+            $"Type: {drive.Type}, " +
+            $"Format: {drive.Format}");
         Console.WriteLine();
         Console.Write("Deseja realmente formatar? sim(s)/não(n): ");
         Console.ResetColor();
@@ -47,8 +48,8 @@ public class BootableDriveService : IBootableDrive
         }
 
         Console.WriteLine($"Formatando o drive {drive.Name} - {drive.Name}... :)");
-  
-        string scriptFormatPath =  "format_script.txt";
+
+        string scriptFormatPath = "format_script.txt";
 
         string[] commandsScriptFormatPath =
         [
@@ -59,11 +60,11 @@ public class BootableDriveService : IBootableDrive
             "assign",
             "exit"
         ];
-        
+
         await _createTempPathScriptGeneric.CreateTempPathScript(scriptFormatPath, commandsScriptFormatPath);
-        
+
         await _executeCommandGeneric.ExecuteCommand("diskpart", $"/s {scriptFormatPath}");
-        
+
         return true;
     }
 
@@ -93,7 +94,8 @@ public class BootableDriveService : IBootableDrive
             "exit"
         ];
 
-        await _createTempPathScriptGeneric.CreateTempPathScript(createPathScriptPartitionActiveBoot, commandsCreatePartitionActiveBoot);
+        await _createTempPathScriptGeneric.CreateTempPathScript(createPathScriptPartitionActiveBoot,
+            commandsCreatePartitionActiveBoot);
 
         Console.WriteLine("Montando a ISO e copiando arquivos...");
         if (!await _copyFilesFromIsoForDriveGeneric.CopyFiles(driveModel.IsoPath, driveModel.DrivePath))
@@ -112,10 +114,10 @@ public class BootableDriveService : IBootableDrive
         }
 
         Console.WriteLine("Drive bootável criado com sucesso!");
-        
+
         return true;
     }
-    
+
     public void MenuBootableDrive()
     {
         while (true)
